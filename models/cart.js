@@ -41,6 +41,7 @@ module.exports = class Cart {
       const updatedCart = { ...JSON.parse(data) };
       // TODO: Analyze the cart => Find existing product to delete
       const deletedProduct = updatedCart.products.find((p) => p.id === id);
+      if (!deletedProduct) return;
       // TODO: Update Cart with updated products
       updatedCart.products = updatedCart.products.filter((p) => p.id !== id);
       updatedCart.totalPrice -= price * deletedProduct.qty;
