@@ -24,5 +24,7 @@ module.exports = class Product {
     return db.execute("SELECT * FROM products");
   }
 
-  static fetchProductById(id) {}
+  static fetchProductById(id) {
+    return db.execute("SELECT * FROM products WHERE products.id = ?", [id]);
+  }
 };
