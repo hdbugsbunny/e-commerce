@@ -2,8 +2,8 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
-    .then(([products]) => {
+  Product.findAll()
+    .then((products) => {
       res.render("shop/index", {
         prods: products,
         docTitle: "Shop",
@@ -16,8 +16,8 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then(([products]) => {
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         docTitle: "All Products",
@@ -31,17 +31,31 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const { productId } = req.params;
-  Product.fetchProductById(productId)
-    .then(([product]) => {
+  //? Preferred Approach Using findByPk
+  Product.findByPk(productId)
+    .then((product) => {
       res.render("shop/product-detail", {
-        product: product[0],
-        docTitle: product[0].title,
+        product: product,
+        docTitle: product.title,
         path: "/products",
       });
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
     });
+
+  //? Other Approach Using findAll with WHERE
+  // Product.findAll({ where: { id: productId } })
+  //   .then((product) => {
+  //     res.render("shop/product-detail", {
+  //       product: product[0],
+  //       docTitle: product[0].title,
+  //       path: "/products",
+  //     });
+  //   })
+  //   .catch((error) => {
+  //     console.log("🚀 ~ error:", error);
+  //   });
 };
 
 exports.getCart = (req, res, next) => {
