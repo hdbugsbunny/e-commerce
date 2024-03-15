@@ -27,17 +27,21 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const { productId } = req.params;
-  Product.fetchProductById(productId, (product) => {
-    if (!product) {
-      return res.redirect("/");
-    }
-    res.render("admin/edit-product", {
-      docTitle: "Edit Product",
-      path: "/admin/edit-product",
-      editingProduct: !!editMode,
-      product,
+  Product.fetchProductById(productId)
+    .then(([product]) => {
+      if (product && product.length === 0) {
+        return res.redirect("/");
+      }
+      res.render("admin/edit-product", {
+        docTitle: "Edit Product",
+        path: "/admin/edit-product",
+        editingProduct: !!editMode,
+        product: product[0],
+      });
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
     });
-  });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -55,22 +59,37 @@ exports.postEditProduct = (req, res, next) => {
     updatedDescription,
     updatedPrice
   );
-  updatedProduct.save();
-  res.redirect("/admin/products");
+  updatedProduct
+    .save()
+    .then(() => {
+      res.redirect("/admin/products");
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("admin/products", {
-      prods: products,
-      docTitle: "Admin Products",
-      path: "/admin/products",
+  Product.fetchAll()
+    .then(([products]) => {
+      res.render("admin/products", {
+        prods: products,
+        docTitle: "Admin Products",
+        path: "/admin/products",
+      });
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
     });
-  });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.deleteProductById(productId);
-  res.redirect("/admin/products");
+  Product.deleteProductById(productId)
+    .then(() => {
+      res.redirect("/admin/products");
+    })
+    .catch((error) => {
+      console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
+    });
 };

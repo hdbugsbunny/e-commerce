@@ -12,13 +12,21 @@ module.exports = class Product {
   }
 
   save() {
+    if (this.id) {
+      return db.execute(
+        `UPDATE products SET title = ?, imageUrl = ?, description = ?, price = ? WHERE id = ?`,
+        [this.title, this.imageUrl, this.description, this.price, this.id]
+      );
+    }
     return db.execute(
       "INSERT INTO products (title, imageUrl, description, price) VALUES (?, ?, ?, ?)",
       [this.title, this.imageUrl, this.description, this.price]
     );
   }
 
-  static deleteProductById(id) {}
+  static deleteProductById(id) {
+    return db.execute("DELETE FROM products WHERE id = ?", [id]);
+  }
 
   static fetchAll() {
     return db.execute("SELECT * FROM products");
