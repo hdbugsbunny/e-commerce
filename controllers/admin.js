@@ -12,9 +12,8 @@ exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, description, price } = req.body;
   Product.create({ title, imageUrl, description, price })
     .then((result) => {
-      // console.log("🚀 ~ .then ~ result:", result);
       console.log("Created product");
-      // res.redirect("/");
+      res.redirect("/");
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
@@ -85,11 +84,22 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.deleteProductById(productId)
-    .then(() => {
-      res.redirect("/admin/products");
-    })
+  //? Preferred Approach Using destroy and WHERE Parameters
+  Product.destroy({ where: { id: productId } })
+    .then(() => res.redirect("/admin/products"))
     .catch((error) => {
       console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
     });
+
+  //? Other Approach Using findByPk
+  // Product.findByPk(productId)
+  //   .then((product) => {
+  //     return product.destroy();
+  //   })
+  //   .then(() => {
+  //     res.redirect("/admin/products");
+  //   })
+  //   .catch((error) => {
+  //     console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
+  //   });
 };
