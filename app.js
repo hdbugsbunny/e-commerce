@@ -6,6 +6,9 @@ const bodyParser = require("body-parser");
 const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 
+const Product = require("./models/product");
+const User = require("./models/user");
+
 const app = express();
 
 //* Using The Ejs for Dynamic HTML Rendering
@@ -26,8 +29,11 @@ app.use(shopRoutes);
 //! Universal Error Handler
 app.use(errorController.get404);
 
+Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Product);
+
 sequelize
-  .sync()
+  .sync({ force: true })
   .then((result) => {
     // console.log("🚀 ~ .then ~ result:", result);
     app.listen(3000);
