@@ -59,22 +59,22 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  Cart.getProductsInCart((cart) => {
-    Product.fetchAll((products) => {
-      const cartProducts = [];
-      for (let product of products) {
-        const cartProduct = cart.products.find((p) => p.id === product.id);
-        if (cartProduct) {
-          cartProducts.push({ product, qty: cartProduct.qty });
-        }
-      }
+  const { user } = req;
+  user
+    .getCart()
+    .then((cart) => {
+      return cart.getProducts();
+    })
+    .then((cartProducts) => {
       res.render("shop/cart", {
         docTitle: "Your Cart",
         path: "/cart",
         cartProducts,
       });
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
     });
-  });
 };
 
 exports.postCart = (req, res, next) => {
