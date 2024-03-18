@@ -133,10 +133,12 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postCartOrder = (req, res, next) => {
+  let fetchedCart;
   const { user } = req;
   user
     .getCart()
     .then((cart) => {
+      fetchedCart = cart;
       return cart.getProducts();
     })
     .then((products) => {
@@ -154,17 +156,32 @@ exports.postCartOrder = (req, res, next) => {
           console.log("🚀 ~ .then ~ error:", error);
         });
     })
-    .then(() => res.redirect("/orders"))
+    .then(() => {
+      return fetchedCart.setProducts(null);
+    })
+    .then(() => {
+      res.redirect("/orders");
+    })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
     });
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render("shop/orders", {
-    docTitle: "Your Orders",
-    path: "/orders",
-  });
+  const { user } = req;
+  user
+    .getOrders({ include: ["products"] })
+    .then((orders) => {
+      console.log("🚀 ~ .then ~ orders:", orders);
+      res.render("shop/orders", {
+        docTitle: "Your Orders",
+        path: "/orders",
+        orders,
+      });
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
 };
 
 exports.getCheckout = (req, res, next) => {
