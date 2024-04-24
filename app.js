@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const errorController = require("./controllers/error");
-const mongoConnect = require("./util/database");
+const mongoConnect = require("./util/database").mongoConnect;
 
 const app = express();
 
@@ -14,8 +14,8 @@ app.set("view engine", "ejs");
 //* To Setting the HTML Templates if they are with different folder name by default it will check the views folder
 app.set("views", "views");
 
-// const adminRoutes = require("./routes/admin");
-// const shopRoutes = require("./routes/shop");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -30,15 +30,15 @@ app.use((req, res, next) => {
   //   .catch((error) => {
   //     console.log("🚀 ~ app.use ~ error:", error);
   //   });
+  next();
 });
 
-// app.use("/admin", adminRoutes);
-// app.use(shopRoutes);
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
 
 //! Universal Error Handler
 app.use(errorController.get404);
 
-mongoConnect((client) => {
-  console.log("🚀 ~ mongoConnect ~ client:", client);
+mongoConnect(() => {
   app.listen(3000);
 });
