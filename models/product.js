@@ -7,7 +7,7 @@ class Product {
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
-    this._id = mongodb.ObjectId.createFromHexString(id);
+    this._id = id ? mongodb.ObjectId.createFromHexString(id) : null;
   }
 
   save() {
@@ -54,6 +54,19 @@ class Product {
       .then((product) => {
         console.log("🚀 ~ Product ~ .then ~ product:", product);
         return product;
+      })
+      .catch((error) => {
+        console.log("🚀 ~ Product ~ fetchById ~ error:", error);
+      });
+  }
+
+  static deleteById(prodId) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .deleteOne({ _id: mongodb.ObjectId.createFromHexString(prodId) })
+      .then((product) => {
+        console.log("🚀 ~ Product ~ .then ~ product:", product);
       })
       .catch((error) => {
         console.log("🚀 ~ Product ~ fetchById ~ error:", error);

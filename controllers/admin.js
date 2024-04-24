@@ -87,22 +87,9 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  //? Preferred Approach Using destroy and WHERE Parameters
-  Product.destroy({ where: { id: productId } })
+  Product.deleteById(productId)
     .then(() => res.redirect("/admin/products"))
     .catch((error) => {
       console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
     });
-
-  //? Other Approach Using findByPk
-  // Product.findByPk(productId)
-  //   .then((product) => {
-  //     return product.destroy();
-  //   })
-  //   .then(() => {
-  //     res.redirect("/admin/products");
-  //   })
-  //   .catch((error) => {
-  //     console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
-  //   });
 };
