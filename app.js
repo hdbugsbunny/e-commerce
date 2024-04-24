@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const errorController = require("./controllers/error");
 const mongoConnect = require("./util/database").mongoConnect;
 
+require("dotenv").config();
+
 const app = express();
 
 //* Using The Ejs for Dynamic HTML Rendering
@@ -40,5 +42,5 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 mongoConnect(() => {
-  app.listen(3000);
+  app.listen(process.env.PORT || 3000);
 });
