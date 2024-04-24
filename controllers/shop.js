@@ -30,9 +30,9 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const { productId } = req.params;
-  //? Preferred Approach Using findByPk
-  Product.findByPk(productId)
+  Product.fetchById(productId)
     .then((product) => {
+      console.log("🚀 ~ .then ~ product:", product)
       res.render("shop/product-detail", {
         product: product,
         docTitle: product.title,
@@ -42,6 +42,18 @@ exports.getProduct = (req, res, next) => {
     .catch((error) => {
       console.log("🚀 ~ error:", error);
     });
+  //? Preferred Approach Using findByPk
+  // Product.findByPk(productId)
+  // .then((product) => {
+  //   res.render("shop/product-detail", {
+  //     product: product,
+  //     docTitle: product.title,
+  //     path: "/products",
+  //   });
+  // })
+  // .catch((error) => {
+  //   console.log("🚀 ~ error:", error);
+  // });
 
   //? Other Approach Using findAll with WHERE
   // Product.findAll({ where: { id: productId } })

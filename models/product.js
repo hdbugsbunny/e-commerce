@@ -1,3 +1,4 @@
+const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class Product {
@@ -33,6 +34,21 @@ class Product {
       })
       .catch((error) => {
         console.log("🚀 ~ Product ~ fetchAll ~ error:", error);
+      });
+  }
+
+  static fetchById(prodId) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .find({ _id: mongodb.ObjectId.createFromHexString(prodId) })
+      .next()
+      .then((product) => {
+        console.log("🚀 ~ Product ~ .then ~ product:", product);
+        return product;
+      })
+      .catch((error) => {
+        console.log("🚀 ~ Product ~ fetchById ~ error:", error);
       });
   }
 }
