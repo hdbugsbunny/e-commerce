@@ -23,10 +23,20 @@ class User {
   }
 
   addToCart(product) {
-    // const cartProduct = this.cart.items.findIndex(
-    //   (item) => item._id === product._id
-    // );
-    const updatedCart = { items: [{ productId: product._id, quantity: 1 }] };
+    const cartProductIndex = this.cart.items.findIndex(
+      (item) => item.productId.toString() === product._id.toString()
+    );
+    const updatedCartItems = [...this.cart.items];
+    let newQuantity = 1;
+
+    if (cartProductIndex >= 0) {
+      newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+      updatedCartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+      updatedCartItems.push({ productId: product._id, quantity: newQuantity });
+    }
+
+    const updatedCart = { items: updatedCartItems };
     const db = getDb();
     return db
       .collection("users")
