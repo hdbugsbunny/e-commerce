@@ -8,6 +8,8 @@ const mongoConnect = require("./util/database").mongoConnect;
 
 require("dotenv").config();
 
+const User = require("./models/user");
+
 const app = express();
 
 //* Using The Ejs for Dynamic HTML Rendering
@@ -24,15 +26,15 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //! Config the User
 app.use((req, res, next) => {
-  // User.findByPk(1)
-  //   .then((user) => {
-  //     req.user = user;
-  //     next();
-  //   })
-  //   .catch((error) => {
-  //     console.log("🚀 ~ app.use ~ error:", error);
-  //   });
-  next();
+  User.fetchUserById("6629e9776e76794b1677a688")
+    .then((user) => {
+      console.log("🚀 ~ .then ~ user:", user);
+      req.user = user;
+      next();
+    })
+    .catch((error) => {
+      console.log("🚀 ~ app.use ~ error:", error);
+    });
 });
 
 app.use("/admin", adminRoutes);
