@@ -42,40 +42,12 @@ exports.getProduct = (req, res, next) => {
     .catch((error) => {
       console.log("🚀 ~ error:", error);
     });
-  //? Preferred Approach Using findByPk
-  // Product.findByPk(productId)
-  // .then((product) => {
-  //   res.render("shop/product-detail", {
-  //     product: product,
-  //     docTitle: product.title,
-  //     path: "/products",
-  //   });
-  // })
-  // .catch((error) => {
-  //   console.log("🚀 ~ error:", error);
-  // });
-
-  //? Other Approach Using findAll with WHERE
-  // Product.findAll({ where: { id: productId } })
-  //   .then((product) => {
-  //     res.render("shop/product-detail", {
-  //       product: product[0],
-  //       docTitle: product[0].title,
-  //       path: "/products",
-  //     });
-  //   })
-  //   .catch((error) => {
-  //     console.log("🚀 ~ error:", error);
-  //   });
 };
 
 exports.getCart = (req, res, next) => {
   const { user } = req;
   user
-    .getCart()
-    .then((cart) => {
-      return cart.getProducts();
-    })
+    .getUserCart()
     .then((cartProducts) => {
       res.render("shop/cart", {
         docTitle: "Your Cart",
@@ -97,41 +69,11 @@ exports.postCart = (req, res, next) => {
     })
     .then((cart) => {
       console.log("🚀 ~ .then ~ cart:", cart);
+      res.redirect("/cart");
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
     });
-  // let fetchedCart;
-  // let newQuantity = 1;
-  // user
-  //   .getCart()
-  //   .then((cart) => {
-  //     fetchedCart = cart;
-  //     return cart.getProducts({ where: { id: productId } });
-  //   })
-  //   .then((cartProducts) => {
-  //     let cartProduct;
-  //     if (cartProducts.length > 0) {
-  //       cartProduct = cartProducts[0];
-  //     }
-  //     if (cartProduct) {
-  //       const oldQuantity = cartProduct.cartItem.quantity;
-  //       newQuantity = oldQuantity + 1;
-  //       return cartProduct;
-  //     }
-  //     return Product.findByPk(productId);
-  //   })
-  //   .then((product) => {
-  //     return fetchedCart.addProduct(product, {
-  //       through: { quantity: newQuantity },
-  //     });
-  //   })
-  //   .then(() => {
-  //     res.redirect("/cart");
-  //   })
-  //   .catch((error) => {
-  //     console.log("🚀 ~ error:", error);
-  //   });
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
