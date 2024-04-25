@@ -11,15 +11,7 @@ class User {
 
   save() {
     const db = getDb();
-    return db
-      .collection("users")
-      .insertOne(this)
-      .then((result) => {
-        console.log("🚀 ~ User ~ .then ~ result:", result);
-      })
-      .catch((error) => {
-        console.log("🚀 ~ User ~ save ~ error:", error);
-      });
+    return db.collection("users").insertOne(this);
   }
 
   addToCart(product) {
