@@ -104,7 +104,7 @@ exports.postCartOrder = (req, res, next) => {
 exports.getOrders = (req, res, next) => {
   const { user } = req;
   user
-    .getOrders({ include: ["products"] })
+    .getUserOrders()
     .then((orders) => {
       console.log("🚀 ~ .then ~ orders:", orders);
       res.render("shop/orders", {
