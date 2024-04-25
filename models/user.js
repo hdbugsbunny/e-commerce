@@ -2,9 +2,11 @@ const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class User {
-  constructor(username, email) {
+  constructor(username, email, cart, id) {
     this.name = username;
     this.email = email;
+    this.cart = cart; //* {items: []}
+    this._id = id;
   }
 
   save() {
@@ -18,6 +20,17 @@ class User {
       .catch((error) => {
         console.log("🚀 ~ User ~ save ~ error:", error);
       });
+  }
+
+  addToCart(product) {
+    // const cartProduct = this.cart.items.findIndex(
+    //   (item) => item._id === product._id
+    // );
+    const updatedCart = { items: [{ productId: product._id, quantity: 1 }] };
+    const db = getDb();
+    return db
+      .collection("users")
+      .updateOne({ _id: this._id }, { $set: { cart: updatedCart } });
   }
 
   static fetchUserById(userId) {

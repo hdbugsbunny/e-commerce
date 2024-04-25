@@ -28,8 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use((req, res, next) => {
   User.fetchUserById("6629e9776e76794b1677a688")
     .then((user) => {
-      console.log("🚀 ~ .then ~ user:", user);
-      req.user = user;
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch((error) => {
