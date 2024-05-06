@@ -11,7 +11,13 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, description, price } = req.body;
   const { user } = req;
-  const product = new Product({ title, imageUrl, description, price });
+  const product = new Product({
+    title,
+    imageUrl,
+    description,
+    price,
+    userId: user,
+  });
   product
     .save()
     .then((result) => {
@@ -74,6 +80,8 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    // .select("title price -_id") //* Which keys I want to retrieve
+    // .populate("userId", "name") //* Same as select
     .then((products) => {
       res.render("admin/products", {
         prods: products,
