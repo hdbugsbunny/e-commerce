@@ -2,9 +2,9 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const errorController = require("./controllers/error");
-const mongoConnect = require("./util/database").mongoConnect;
 
 require("dotenv").config();
 
@@ -42,6 +42,12 @@ app.use(shopRoutes);
 //! Universal Error Handler
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  app.listen(process.env.PORT || 3000);
-});
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then((connection) => {
+    console.log("🚀 ~ mongoose.connect ~ connection:", connection);
+    app.listen(process.env.PORT || 3000);
+  })
+  .catch((error) => {
+    console.log("🚀 ~ error:", error);
+  });
