@@ -121,8 +121,7 @@ exports.postCartOrder = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   const { user } = req;
-  user
-    .getUserOrders()
+  Order.find({ "user.userId": user._id })
     .then((orders) => {
       console.log("🚀 ~ .then ~ orders:", orders);
       res.render("shop/orders", {
