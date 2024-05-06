@@ -49,11 +49,12 @@ exports.getCart = (req, res, next) => {
   const { user } = req;
   user
     .populate("cart.items.productId")
-    .then((cartProducts) => {
+    .then((user) => {
+      const cartProducts = user.cart.items || [];
       res.render("shop/cart", {
         docTitle: "Your Cart",
         path: "/cart",
-        cartProducts: cartProducts.cart.items || [],
+        cartProducts,
       });
     })
     .catch((error) => {

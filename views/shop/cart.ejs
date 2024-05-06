@@ -6,7 +6,7 @@
     <%- include("../includes/navigation.ejs") %>
     <main>
       <% if (cartProducts.length > 0) { %>
-        <ul>
+        <ul class="cart__item-list">
           <% cartProducts.forEach(cartProduct => { %>
             <li class="cart__item">
               <h1><%= cartProduct.productId.title %></h1>
