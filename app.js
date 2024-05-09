@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const expressSession = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(expressSession);
 
 const errorController = require("./controllers/error");
 
@@ -12,6 +13,10 @@ require("dotenv").config();
 const User = require("./models/user");
 
 const app = express();
+const sessionStore = new MongoDBStore({
+  uri: process.env.MONGODB_URI,
+  collection: "sessions",
+});
 
 //* Using The Ejs for Dynamic HTML Rendering
 app.set("view engine", "ejs");
@@ -30,20 +35,21 @@ app.use(
     secret: "my secret",
     resave: false,
     saveUninitialized: false,
+    store: sessionStore,
   })
 );
 
 //! Config the User
-app.use((req, res, next) => {
-  User.findById("6638c06182a1a0a5084ca839")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((error) => {
-      console.log("🚀 ~ app.use ~ error:", error);
-    });
-});
+// app.use((req, res, next) => {
+//   User.findById("6638c06182a1a0a5084ca839")
+//     .then((user) => {
+//       req.user = user;
+//       next();
+//     })
+//     .catch((error) => {
+//       console.log("🚀 ~ app.use ~ error:", error);
+//     });
+// });
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

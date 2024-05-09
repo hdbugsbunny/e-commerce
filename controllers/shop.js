@@ -2,7 +2,7 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 
 exports.getIndex = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const { isAuthenticated } = req.session;
   Product.find()
     .then((products) => {
       res.render("shop/index", {
@@ -18,7 +18,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const { isAuthenticated } = req.session;
   Product.find()
     .then((products) => {
       res.render("shop/product-list", {
@@ -34,7 +34,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const { isAuthenticated } = req.session;
   const { productId } = req.params;
   Product.findById(productId)
     .then((product) => {
@@ -52,7 +52,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  const { user, isAuthenticated } = req;
+  const { user, isAuthenticated } = req.session;
   user
     .populate("cart.items.productId")
     .then((user) => {
@@ -71,7 +71,7 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const { productId } = req.body;
-  const { user } = req;
+  const { user } = req.session;
   Product.findById(productId)
     .then((product) => {
       return user.addToCart(product);
@@ -87,7 +87,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  const { user } = req;
+  const { user } = req.session;
   user
     .deleteItemFromCart(productId)
     .then(() => {
@@ -99,7 +99,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postCartOrder = (req, res, next) => {
-  const { user } = req;
+  const { user } = req.session;
   user
     .populate("cart.items.productId")
     .then((user) => {
@@ -128,7 +128,7 @@ exports.postCartOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  const { user, isAuthenticated } = req;
+  const { user, isAuthenticated } = req.session;
   Order.find({ "user.userId": user._id })
     .then((orders) => {
       console.log("🚀 ~ .then ~ orders:", orders);

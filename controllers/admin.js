@@ -1,7 +1,7 @@
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const { isAuthenticated } = req.session;
   res.render("admin/edit-product", {
     docTitle: "Add Product",
     path: "/admin/add-product",
@@ -12,7 +12,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, description, price } = req.body;
-  const { user } = req;
+  const { user } = req.session;
   const product = new Product({
     title,
     imageUrl,
@@ -32,7 +32,7 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const { isAuthenticated } = req.session;
   const { editMode } = req.query;
   if (!Boolean(editMode)) {
     return res.redirect("/");
@@ -83,7 +83,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const { isAuthenticated } = req.session;
   Product.find()
     // .select("title price -_id") //* Which keys I want to retrieve
     // .populate("userId", "name") //* Same as select
