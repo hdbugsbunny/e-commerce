@@ -22,3 +22,10 @@ exports.postLogin = (req, res, next) => {
       console.log("🚀 ~ app.use ~ error:", error);
     });
 };
+
+exports.postLogout = (req, res, next) => {
+  req.session.destroy((error) => {
+    console.log("🚀 ~ req.session.destroy ~ error:", error);
+    res.redirect("/");
+  });
+};
