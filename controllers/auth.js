@@ -16,7 +16,10 @@ exports.postLogin = (req, res, next) => {
     .then((user) => {
       req.session.isAuthenticated = true;
       req.session.user = user;
-      res.redirect("/");
+      req.session.save((error) => {
+        console.log("🚀 ~ req.session.save ~ error:", error);
+        res.redirect("/");
+      });
     })
     .catch((error) => {
       console.log("🚀 ~ app.use ~ error:", error);
