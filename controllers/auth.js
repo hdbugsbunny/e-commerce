@@ -1,5 +1,6 @@
 exports.getLogin = (req, res, next) => {
-  const { isAuthenticated } = req;
+  const isAuthenticated =
+    req.get("Cookie").split(";")[1].trim().split("=")[1] === "true";
   res.render("auth/login", {
     docTitle: "Login",
     path: "/login",
@@ -8,6 +9,6 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  req.isAuthenticated = true;
+  res.setHeader("Set-Cookie", "isAuthenticated=true");
   res.redirect("/");
 };
