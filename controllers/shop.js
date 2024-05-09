@@ -2,12 +2,14 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 
 exports.getIndex = (req, res, next) => {
+  const { isAuthenticated } = req;
   Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         docTitle: "Shop",
         path: "/",
+        isAuthenticated,
       });
     })
     .catch((error) => {
@@ -16,12 +18,14 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
+  const { isAuthenticated } = req;
   Product.find()
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         docTitle: "All Products",
         path: "/products",
+        isAuthenticated,
       });
     })
     .catch((error) => {
@@ -30,6 +34,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
+  const { isAuthenticated } = req;
   const { productId } = req.params;
   Product.findById(productId)
     .then((product) => {
@@ -38,6 +43,7 @@ exports.getProduct = (req, res, next) => {
         product: product,
         docTitle: product.title,
         path: "/products",
+        isAuthenticated,
       });
     })
     .catch((error) => {
@@ -46,7 +52,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  const { user } = req;
+  const { user, isAuthenticated } = req;
   user
     .populate("cart.items.productId")
     .then((user) => {
@@ -55,6 +61,7 @@ exports.getCart = (req, res, next) => {
         docTitle: "Your Cart",
         path: "/cart",
         cartProducts,
+        isAuthenticated,
       });
     })
     .catch((error) => {
@@ -121,7 +128,7 @@ exports.postCartOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  const { user } = req;
+  const { user, isAuthenticated } = req;
   Order.find({ "user.userId": user._id })
     .then((orders) => {
       console.log("🚀 ~ .then ~ orders:", orders);
@@ -129,6 +136,7 @@ exports.getOrders = (req, res, next) => {
         docTitle: "Your Orders",
         path: "/orders",
         orders,
+        isAuthenticated,
       });
     })
     .catch((error) => {
@@ -136,9 +144,9 @@ exports.getOrders = (req, res, next) => {
     });
 };
 
-exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    docTitle: "Checkout",
-    path: "/checkout",
-  });
-};
+// exports.getCheckout = (req, res, next) => {
+//   res.render("shop/checkout", {
+//     docTitle: "Checkout",
+//     path: "/checkout",
+//   });
+// };
