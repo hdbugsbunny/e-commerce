@@ -52,7 +52,8 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  const { user, isAuthenticated } = req.session;
+  const { user } = req;
+  const { isAuthenticated } = req.session;
   user
     .populate("cart.items.productId")
     .then((user) => {
@@ -71,7 +72,7 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const { productId } = req.body;
-  const { user } = req.session;
+  const { user } = req;
   Product.findById(productId)
     .then((product) => {
       return user.addToCart(product);
@@ -87,7 +88,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  const { user } = req.session;
+  const { user } = req;
   user
     .deleteItemFromCart(productId)
     .then(() => {
@@ -99,7 +100,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postCartOrder = (req, res, next) => {
-  const { user } = req.session;
+  const { user } = req;
   user
     .populate("cart.items.productId")
     .then((user) => {
@@ -128,7 +129,8 @@ exports.postCartOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  const { user, isAuthenticated } = req.session;
+  const { user } = req;
+  const { isAuthenticated } = req.session;
   Order.find({ "user.userId": user._id })
     .then((orders) => {
       console.log("🚀 ~ .then ~ orders:", orders);

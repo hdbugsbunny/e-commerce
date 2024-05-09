@@ -40,16 +40,17 @@ app.use(
 );
 
 //! Config the User
-// app.use((req, res, next) => {
-//   User.findById("6638c06182a1a0a5084ca839")
-//     .then((user) => {
-//       req.user = user;
-//       next();
-//     })
-//     .catch((error) => {
-//       console.log("🚀 ~ app.use ~ error:", error);
-//     });
-// });
+app.use((req, res, next) => {
+  if (!req.session.user) return next();
+  User.findById(req.session.user._id)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((error) => {
+      console.log("🚀 ~ app.use ~ error:", error);
+    });
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
