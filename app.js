@@ -61,19 +61,7 @@ app.use(errorController.get404);
 
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          name: "Harshit",
-          email: "harshit@test.com",
-          cart: { items: [] },
-        });
-        user.save();
-      }
-    });
-    app.listen(process.env.PORT || 3000);
-  })
+  .then(() => app.listen(process.env.PORT || 3000))
   .catch((error) => {
     console.log("🚀 ~ error:", error);
   });

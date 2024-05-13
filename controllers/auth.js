@@ -31,7 +31,21 @@ exports.postLogin = (req, res, next) => {
     });
 };
 
-exports.postSignup = (req, res, next) => {};
+exports.postSignup = (req, res, next) => {
+  const { email, password, confirmPassword } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (user) return res.redirect("/signup");
+
+      const newUser = new User({ email, password, cart: { items: [] } });
+      return newUser.save();
+    })
+    .then(() => res.redirect("/login"))
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
+};
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy((error) => {
