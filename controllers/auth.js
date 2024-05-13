@@ -8,6 +8,14 @@ exports.getLogin = (req, res, next) => {
   });
 };
 
+exports.getSignup = (req, res, next) => {
+  res.render("auth/signup", {
+    docTitle: "Signup",
+    path: "/signup",
+    isAuthenticated: false,
+  });
+};
+
 exports.postLogin = (req, res, next) => {
   User.findById("6638c06182a1a0a5084ca839")
     .then((user) => {
@@ -22,6 +30,8 @@ exports.postLogin = (req, res, next) => {
       console.log("🚀 ~ app.use ~ error:", error);
     });
 };
+
+exports.postSignup = (req, res, next) => {};
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy((error) => {
