@@ -113,7 +113,7 @@ exports.postCartOrder = (req, res, next) => {
         };
       });
       const order = new Order({
-        user: { name: user.name, userId: user },
+        user: { email: user.email, userId: user },
         items: cartProducts,
       });
       return order.save();
