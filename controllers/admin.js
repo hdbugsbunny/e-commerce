@@ -1,12 +1,10 @@
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
-  const { isAuthenticated } = req.session;
   res.render("admin/edit-product", {
     docTitle: "Add Product",
     path: "/admin/add-product",
     editingProduct: false,
-    isAuthenticated,
   });
 };
 
@@ -32,7 +30,6 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
-  const { isAuthenticated } = req.session;
   const { editMode } = req.query;
   if (!Boolean(editMode)) {
     return res.redirect("/");
@@ -48,7 +45,6 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editingProduct: !!editMode,
         product,
-        isAuthenticated,
       });
     })
     .catch((error) => {
@@ -83,7 +79,6 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  const { isAuthenticated } = req.session;
   Product.find()
     // .select("title price -_id") //* Which keys I want to retrieve
     // .populate("userId", "name") //* Same as select
@@ -92,7 +87,6 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         docTitle: "Admin Products",
         path: "/admin/products",
-        isAuthenticated,
       });
     })
     .catch((error) => {
