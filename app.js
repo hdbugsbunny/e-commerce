@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const expressSession = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(expressSession);
+const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 
@@ -17,6 +18,8 @@ const sessionStore = new MongoDBStore({
   uri: process.env.MONGODB_URI,
   collection: "sessions",
 });
+
+const csrfProtection = csrf();
 
 //* Using The Ejs for Dynamic HTML Rendering
 app.set("view engine", "ejs");
@@ -38,6 +41,7 @@ app.use(
     store: sessionStore,
   })
 );
+app.use(csrfProtection);
 
 //! Config the User
 app.use((req, res, next) => {
@@ -50,6 +54,12 @@ app.use((req, res, next) => {
     .catch((error) => {
       console.log("🚀 ~ app.use ~ error:", error);
     });
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);

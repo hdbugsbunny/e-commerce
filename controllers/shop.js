@@ -10,6 +10,7 @@ exports.getIndex = (req, res, next) => {
         docTitle: "Shop",
         path: "/",
         isAuthenticated,
+        csrfToken: req.csrfToken(),
       });
     })
     .catch((error) => {
