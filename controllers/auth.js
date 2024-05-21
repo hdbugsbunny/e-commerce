@@ -29,6 +29,14 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
+exports.getResetPassword = (req, res, next) => {
+  res.render("auth/reset-password", {
+    docTitle: "Reset Password",
+    path: "/reset-password",
+    errorMessage: req.flash("error")[0],
+  });
+};
+
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
