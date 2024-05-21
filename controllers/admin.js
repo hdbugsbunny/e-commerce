@@ -79,7 +79,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  const { _id } = req.user;
+  Product.find({ userId: _id })
     // .select("title price -_id") //* Which keys I want to retrieve
     // .populate("userId", "name") //* Same as select
     .then((products) => {
