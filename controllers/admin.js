@@ -53,6 +53,7 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
+  const { _id } = req.user;
   const {
     productId,
     title: updatedTitle,
@@ -63,15 +64,18 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(productId)
     .then((product) => {
+      if (product.userId.toString() !== _id.toString()) {
+        return res.redirect("/");
+      }
+
       product.title = updatedTitle;
       product.imageUrl = updatedImageUrl;
       product.description = updatedDescription;
       product.price = updatedPrice;
-      return product.save();
-    })
-    .then((result) => {
-      console.log("Updating Products");
-      res.redirect("/admin/products");
+      return product.save().then((result) => {
+        console.log("Updating Products");
+        res.redirect("/admin/products");
+      });
     })
     .catch((error) => {
       console.log("🚀 ~ error:", error);
@@ -97,7 +101,8 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.findByIdAndDelete(productId)
+  const { _id } = req.user;
+  Product.deleteOne({ _id: productId, userId: _id })
     .then(() => res.redirect("/admin/products"))
     .catch((error) => {
       console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
