@@ -10,6 +10,8 @@ router.get("/signup", authController.getSignup);
 
 router.get("/reset-password", authController.getResetPassword);
 
+router.get("/new-password/:token", authController.getNewPassword);
+
 router.post("/login", authController.postLogin);
 
 router.post("/signup", authController.postSignup);

@@ -38,6 +38,23 @@ exports.getResetPassword = (req, res, next) => {
   });
 };
 
+exports.getNewPassword = (req, res, next) => {
+  const { token: resetToken } = req.params;
+
+  User.findOne({ resetToken, resetTokenExpiration: { $gt: Date.now() } })
+    .then((user) => {
+      res.render("auth/new-password", {
+        docTitle: "New Password",
+        path: "/new-password",
+        errorMessage: req.flash("error")[0],
+        userId: user._id.toString(),
+      });
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
+};
+
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
@@ -130,7 +147,7 @@ exports.postResetPassword = (req, res, next) => {
           subject: "Password Reset!",
           html: `
             <p>You requested a password reset</p>
-            <p>Click this <a href="http://localhost:${process.env.PORT}/reset-password/${token}">link</a> to set a new password</p>
+            <p>Click this <a href="http://localhost:${process.env.PORT}/new-password/${token}">link</a> to set a new password</p>
           `,
         });
         res.redirect("/");
