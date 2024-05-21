@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodeMailer = require("nodemailer");
 const sendGridTransport = require("nodemailer-sendgrid-transport");
@@ -101,6 +102,43 @@ exports.postSignup = (req, res, next) => {
     .catch((error) => {
       console.log("🚀 ~ error:", error);
     });
+};
+
+exports.postResetPassword = (req, res, next) => {
+  const { email } = req.body;
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log("🚀 ~ crypto.randomBytes ~ err:", err);
+      return res.redirect("/reset-password");
+    }
+
+    const token = buffer.toString("hex");
+
+    User.findOne({ email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "E-mail Address Not Found!");
+          return res.redirect("/reset-password");
+        }
+
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000;
+        user.save();
+        transporter.sendMail({
+          to: email,
+          from: process.env.SENDER_EMAIL,
+          subject: "Password Reset!",
+          html: `
+            <p>You requested a password reset</p>
+            <p>Click this <a href="http://localhost:${process.env.PORT}/reset-password/${token}">link</a> to set a new password</p>
+          `,
+        });
+        res.redirect("/");
+      })
+      .catch((error) => {
+        console.log("🚀 ~ crypto.randomBytes ~ error:", error);
+      });
+  });
 };
 
 exports.postLogout = (req, res, next) => {
