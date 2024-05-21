@@ -48,6 +48,7 @@ exports.getNewPassword = (req, res, next) => {
         path: "/new-password",
         errorMessage: req.flash("error")[0],
         userId: user._id.toString(),
+        passwordToken: resetToken,
       });
     })
     .catch((error) => {
@@ -156,6 +157,33 @@ exports.postResetPassword = (req, res, next) => {
         console.log("🚀 ~ crypto.randomBytes ~ error:", error);
       });
   });
+};
+
+exports.postNewPassword = (req, res, next) => {
+  const { password, userId, passwordToken } = req.body;
+  let resetUser;
+
+  User.findOne({
+    resetToken: passwordToken,
+    resetTokenExpiration: { $gt: Date.now() },
+    _id: userId,
+  })
+    .then((user) => {
+      resetUser = user;
+      return bcrypt.hash(password, 12);
+    })
+    .then((hashedPassword) => {
+      resetUser.password = hashedPassword;
+      resetUser.resetToken = undefined;
+      resetUser.resetTokenExpiration = undefined;
+
+      resetUser.save();
+
+      res.redirect("/login");
+    })
+    .catch((error) => {
+      console.log("🚀 ~ error:", error);
+    });
 };
 
 exports.postLogout = (req, res, next) => {
