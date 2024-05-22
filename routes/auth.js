@@ -17,7 +17,15 @@ router.post("/login", authController.postLogin);
 
 router.post(
   "/signup",
-  check("email").isEmail().withMessage("Enter Valid Email!"),
+  check("email")
+    .isEmail()
+    .withMessage("Enter Valid Email!")
+    .custom((value, { req }) => {
+      if (value === "test@test.com") {
+        throw new Error("This email is forbidden!");
+      }
+      return true;
+    }),
   authController.postSignup
 );
 
