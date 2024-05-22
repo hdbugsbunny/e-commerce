@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodeMailer = require("nodemailer");
 const sendGridTransport = require("nodemailer-sendgrid-transport");
+const { validationResult } = require("express-validator");
 const User = require("../models/user");
 
 require("dotenv").config();
@@ -92,6 +93,15 @@ exports.postLogin = (req, res, next) => {
 
 exports.postSignup = (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log("🚀 ~ errors:", errors.array());
+    return res.status(422).render("auth/signup", {
+      docTitle: "Signup",
+      path: "/signup",
+      errorMessage: errors.array(),
+    });
+  }
 
   User.findOne({ email })
     .then((user) => {
