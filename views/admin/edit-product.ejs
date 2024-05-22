@@ -7,22 +7,25 @@
     <%- include("../includes/navigation.ejs") %>
 
     <main>
+      <% if (errorMessage) { %>
+      <div class="user-message user-message--error"><%= errorMessage %></div>
+      <% } %>
       <form class="product-form" action="/admin/<% if (editingProduct) { %>editProduct<% } else { %>product<% } %>" method="POST">
         <div class="form-control">
           <label for="title">Title</label>
-          <input type="text" name="title" id="title" value="<% if (editingProduct) { %><%= product.title %><% } %>" />
+          <input class="<%= totalErrors.find(error => error.path === 'title') ? 'invalid' : '' %>" type="text" name="title" id="title" value="<% if (editingProduct || hasErrors) { %><%= product.title %><% } %>" />
         </div>
         <div class="form-control">
           <label for="imageUrl">Image URL</label>
-          <input type="text" name="imageUrl" id="imageUrl" value="<% if (editingProduct) { %><%= product.imageUrl %><% } %>" />
+          <input class="<%= totalErrors.find(error => error.path === 'imageUrl') ? 'invalid' : '' %>" type="text" name="imageUrl" id="imageUrl" value="<% if (editingProduct || hasErrors) { %><%= product.imageUrl %><% } %>" />
         </div>
         <div class="form-control">
           <label for="price">Price</label>
-          <input type="number" name="price" id="price" step="0.01" value="<% if (editingProduct) { %><%= product.price %><% } %>" />
+          <input class="<%= totalErrors.find(error => error.path === 'price') ? 'invalid' : '' %>" type="number" name="price" id="price" step="0.01" value="<% if (editingProduct || hasErrors) { %><%= product.price %><% } %>" />
         </div>
         <div class="form-control">
           <label for="description">Description</label>
-          <textarea name="description" id="description" rows="5"><% if (editingProduct) { %><%= product.description %><% } %></textarea>
+          <textarea class="<%= totalErrors.find(error => error.path === 'description') ? 'invalid' : '' %>" name="description" id="description" rows="5"><% if (editingProduct || hasErrors) { %><%= product.description %><% } %></textarea>
         </div>
         <% if (editingProduct) { %>
             <input type="hidden" name="productId" value="<%= product._id %>">

@@ -1,3 +1,5 @@
+const { validationResult } = require("express-validator");
+
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
@@ -5,12 +7,28 @@ exports.getAddProduct = (req, res, next) => {
     docTitle: "Add Product",
     path: "/admin/add-product",
     editingProduct: false,
+    hasErrors: false,
+    errorMessage: "",
+    totalErrors: [],
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, description, price } = req.body;
   const { user } = req;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      docTitle: "Add Product",
+      path: "/admin/add-product",
+      editingProduct: false,
+      hasErrors: true,
+      product: { title, imageUrl, description, price },
+      errorMessage: errors.array()[0].msg,
+      totalErrors: errors.array(),
+    });
+  }
+
   const product = new Product({
     title,
     imageUrl,
@@ -44,6 +62,9 @@ exports.getEditProduct = (req, res, next) => {
         docTitle: "Edit Product",
         path: "/admin/edit-product",
         editingProduct: !!editMode,
+        hasErrors: false,
+        errorMessage: "",
+        totalErrors: [],
         product,
       });
     })
@@ -61,6 +82,25 @@ exports.postEditProduct = (req, res, next) => {
     description: updatedDescription,
     price: updatedPrice,
   } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      docTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editingProduct: true,
+      hasErrors: true,
+      errorMessage: "",
+      product: {
+        _id: productId,
+        title: updatedTitle,
+        imageUrl: updatedImageUrl,
+        description: updatedDescription,
+        price: updatedPrice,
+      },
+      errorMessage: errors.array()[0].msg,
+      totalErrors: errors.array(),
+    });
+  }
 
   Product.findById(productId)
     .then((product) => {
