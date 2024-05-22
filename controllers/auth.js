@@ -29,6 +29,7 @@ exports.getSignup = (req, res, next) => {
     path: "/signup",
     errorMessage: req.flash("error")[0],
     prevInput: { email: "", password: "", confirmPassword: "" },
+    totalErrors: [],
   });
 };
 
@@ -110,6 +111,7 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       errorMessage: errors.array()[0].msg,
       prevInput: { email, password, confirmPassword },
+      totalErrors: errors.array(),
     });
   }
 
