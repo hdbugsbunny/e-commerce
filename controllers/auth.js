@@ -20,6 +20,8 @@ exports.getLogin = (req, res, next) => {
     docTitle: "Login",
     path: "/login",
     errorMessage: req.flash("error")[0],
+    prevInput: { email: "", password: "" },
+    totalErrors: [],
   });
 };
 
@@ -67,14 +69,21 @@ exports.postLogin = (req, res, next) => {
       docTitle: "Login",
       path: "/login",
       errorMessage: errors.array()[0].msg,
+      prevInput: { email, password },
+      totalErrors: errors.array(),
     });
   }
 
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        req.flash("error", "Invalid E-Mail!");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          docTitle: "Login",
+          path: "/login",
+          errorMessage: "Invalid E-Mail!",
+          prevInput: { email, password },
+          totalErrors: [],
+        });
       }
 
       bcrypt
@@ -89,8 +98,13 @@ exports.postLogin = (req, res, next) => {
             });
           }
 
-          req.flash("error", "Invalid Password!");
-          return res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            docTitle: "Login",
+            path: "/login",
+            errorMessage: "Invalid Password!",
+            prevInput: { email, password },
+            totalErrors: [],
+          });
         })
         .catch((error) => {
           console.log("🚀 ~ .then ~ error:", error);
