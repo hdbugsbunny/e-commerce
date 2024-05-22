@@ -14,7 +14,19 @@ router.get("/reset-password", authController.getResetPassword);
 
 router.get("/new-password/:token", authController.getNewPassword);
 
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  [
+    check("email").isEmail().withMessage("Enter Valid Email!"),
+    body(
+      "password",
+      "Enter Valid Password With Only Numbers, Text And Atleast 5 Characters"
+    )
+      .isLength({ min: 5 })
+      .isAlphanumeric(),
+  ],
+  authController.postLogin
+);
 
 router.post(
   "/signup",
@@ -22,16 +34,15 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Enter Valid Email!")
-      .custom((value, { req }) => {
+      .custom(async (value) => {
         // if (value === "test@test.com") {
         //   throw new Error("This email is forbidden!");
         // }
         // return true;
-        return User.findOne({ email: value }).then((user) => {
-          if (user) {
-            return Promise.reject("E-Mail Already Exists!");
-          }
-        });
+        const user = await User.findOne({ email: value });
+        if (user) {
+          return Promise.reject("E-Mail Already Exists!");
+        }
       }),
     body(
       "password",
