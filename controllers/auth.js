@@ -57,7 +57,9 @@ exports.getNewPassword = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -112,7 +114,9 @@ exports.postLogin = (req, res, next) => {
         });
     })
     .catch((error) => {
-      console.log("🚀 ~ app.use ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -148,7 +152,9 @@ exports.postSignup = (req, res, next) => {
       res.redirect("/login");
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -184,7 +190,9 @@ exports.postResetPassword = (req, res, next) => {
         res.redirect("/");
       })
       .catch((error) => {
-        console.log("🚀 ~ crypto.randomBytes ~ error:", error);
+        const nextError = new Error(error);
+        nextError.httpStatusCode = 500;
+        return next(nextError);
       });
   });
 };
@@ -212,7 +220,9 @@ exports.postNewPassword = (req, res, next) => {
       res.redirect("/login");
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 

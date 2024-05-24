@@ -1,7 +1,6 @@
 const { validationResult } = require("express-validator");
 
 const Product = require("../models/product");
-const { default: mongoose } = require("mongoose");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -31,7 +30,6 @@ exports.postAddProduct = (req, res, next) => {
   }
 
   const product = new Product({
-    _id: new mongoose.Types.ObjectId("664ca33859d16dbc99fdf027"),
     title,
     imageUrl,
     description,
@@ -45,17 +43,9 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/");
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
-      // return res.status(500).render("admin/edit-product", {
-      //   docTitle: "Add Product",
-      //   path: "/admin/add-product",
-      //   editingProduct: false,
-      //   hasErrors: true,
-      //   product: { title, imageUrl, description, price },
-      //   errorMessage: "Database Operation Failed! Please Try Again!",
-      //   totalErrors: [],
-      // });
-      res.redirect("/500");
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -81,7 +71,9 @@ exports.getEditProduct = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -130,7 +122,9 @@ exports.postEditProduct = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -147,7 +141,9 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -157,6 +153,8 @@ exports.postDeleteProduct = (req, res, next) => {
   Product.deleteOne({ _id: productId, userId: _id })
     .then(() => res.redirect("/admin/products"))
     .catch((error) => {
-      console.log("🚀 ~ exports.postDeleteProduct ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };

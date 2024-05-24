@@ -69,7 +69,8 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-app.get("/500", errorController.get500);
+//! Universal Something Went Wrong Handler
+app.use(errorController.get500);
 
 //! Universal Error Handler
 app.use(errorController.get404);

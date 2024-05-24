@@ -11,7 +11,9 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -25,7 +27,9 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -41,7 +45,9 @@ exports.getProduct = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -58,7 +64,9 @@ exports.getCart = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -74,7 +82,9 @@ exports.postCart = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -87,7 +97,9 @@ exports.postCartDeleteProduct = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((error) => {
-      console.log("🚀 ~ exports.postCartDeleteProduct ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -116,7 +128,9 @@ exports.postCartOrder = (req, res, next) => {
       res.redirect("/orders");
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
@@ -132,7 +146,9 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch((error) => {
-      console.log("🚀 ~ error:", error);
+      const nextError = new Error(error);
+      nextError.httpStatusCode = 500;
+      return next(nextError);
     });
 };
 
