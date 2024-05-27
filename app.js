@@ -7,6 +7,7 @@ const expressSession = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(expressSession);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const multer = require("multer");
 
 const errorController = require("./controllers/error");
 
@@ -22,6 +23,15 @@ const sessionStore = new MongoDBStore({
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${new Date().toISOString()}-${file.originalname}`);
+  },
+});
+
 //* Using The Ejs for Dynamic HTML Rendering
 app.set("view engine", "ejs");
 
@@ -33,6 +43,7 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage }).single("imageFile"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   expressSession({
