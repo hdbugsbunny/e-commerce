@@ -14,9 +14,20 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  const { title, imageUrl, description, price } = req.body;
-  const { user, file } = req;
-  console.log("🚀 ~ file:", file);
+  const { title, description, price } = req.body;
+  const { user, file: imageFile } = req;
+  if (!imageFile) {
+    return res.status(422).render("admin/edit-product", {
+      docTitle: "Add Product",
+      path: "/admin/add-product",
+      editingProduct: false,
+      hasErrors: true,
+      product: { title, description, price },
+      errorMessage: "Attached File is Not an Image!",
+      totalErrors: [],
+    });
+  }
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
@@ -24,11 +35,13 @@ exports.postAddProduct = (req, res, next) => {
       path: "/admin/add-product",
       editingProduct: false,
       hasErrors: true,
-      product: { title, imageUrl, description, price },
+      product: { title, description, price },
       errorMessage: errors.array()[0].msg,
       totalErrors: errors.array(),
     });
   }
+
+  const imageUrl = imageFile.path;
 
   const product = new Product({
     title,
@@ -83,10 +96,10 @@ exports.postEditProduct = (req, res, next) => {
   const {
     productId,
     title: updatedTitle,
-    imageUrl: updatedImageUrl,
     description: updatedDescription,
     price: updatedPrice,
   } = req.body;
+  const { file: imageFile } = req;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
@@ -98,7 +111,6 @@ exports.postEditProduct = (req, res, next) => {
       product: {
         _id: productId,
         title: updatedTitle,
-        imageUrl: updatedImageUrl,
         description: updatedDescription,
         price: updatedPrice,
       },
@@ -114,7 +126,7 @@ exports.postEditProduct = (req, res, next) => {
       }
 
       product.title = updatedTitle;
-      product.imageUrl = updatedImageUrl;
+      if (imageFile) product.imageUrl = imageFile.path;
       product.description = updatedDescription;
       product.price = updatedPrice;
       return product.save().then((result) => {
