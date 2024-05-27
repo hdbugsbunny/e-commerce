@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const PDFDocument = require("pdfkit");
+
 const Product = require("../models/product");
 const Order = require("../models/order");
 
@@ -169,6 +171,17 @@ exports.getInvoiceOrder = (req, res, next) => {
       const invoiceName = `invoice-${orderId}.pdf`;
       const invoicePath = path.join("data", "invoices", invoiceName);
 
+      //* Dynamically Generating The Invoice Order
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.text("Hello World!");
+
+      pdfDoc.end();
+
       //* Preloading Data(Not Good For Big Files)
       // fs.readFile(invoicePath, (error, data) => {
       //   if (error) {
@@ -180,10 +193,10 @@ exports.getInvoiceOrder = (req, res, next) => {
       //   res.send(data);
       // });
       //* Streaming Data(Preferred For Big Files)
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
-      file.pipe(res);
+      // const file = fs.createReadStream(invoicePath);
+      // res.setHeader("Content-Type", "application/pdf");
+      // res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      // file.pipe(res);
     })
     .catch((error) => {
       const nextError = new Error(error);
