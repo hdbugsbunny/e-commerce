@@ -56,6 +56,7 @@ app.use(
   multer({ storage: fileStorage, fileFilter: imageFilter }).single("imageFile")
 );
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   expressSession({
     secret: "my secret",
