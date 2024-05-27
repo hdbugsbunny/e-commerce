@@ -169,15 +169,21 @@ exports.getInvoiceOrder = (req, res, next) => {
       const invoiceName = `invoice-${orderId}.pdf`;
       const invoicePath = path.join("data", "invoices", invoiceName);
 
-      fs.readFile(invoicePath, (error, data) => {
-        if (error) {
-          return next(error);
-        }
+      //* Preloading Data(Not Good For Big Files)
+      // fs.readFile(invoicePath, (error, data) => {
+      //   if (error) {
+      //     return next(error);
+      //   }
 
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
-        res.send(data);
-      });
+      //   res.setHeader("Content-Type", "application/pdf");
+      //   res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      //   res.send(data);
+      // });
+      //* Streaming Data(Preferred For Big Files)
+      const file = fs.createReadStream(invoicePath);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      file.pipe(res);
     })
     .catch((error) => {
       const nextError = new Error(error);
