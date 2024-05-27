@@ -32,6 +32,15 @@ const fileStorage = multer.diskStorage({
   },
 });
 
+const imageFilter = (req, file, cb) => {
+  const validImages = ["image/png", "image/jpeg", "image/jpg"];
+  if (validImages.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 //* Using The Ejs for Dynamic HTML Rendering
 app.set("view engine", "ejs");
 
@@ -43,7 +52,9 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ storage: fileStorage }).single("imageFile"));
+app.use(
+  multer({ storage: fileStorage, fileFilter: imageFilter }).single("imageFile")
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   expressSession({
