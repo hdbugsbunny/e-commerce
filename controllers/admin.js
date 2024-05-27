@@ -15,7 +15,8 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, description, price } = req.body;
-  const { user } = req;
+  const { user, file } = req;
+  console.log("🚀 ~ file:", file);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {

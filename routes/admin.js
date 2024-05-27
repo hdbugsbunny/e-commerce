@@ -20,7 +20,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .trim(),
-    body("imageUrl", "Book Image Should be Valid Image URL!").isURL(),
     body("price", "Book Price Should be Valid Floating Number!").isFloat(),
     body("description", "Book Description Atleast 5 Characters!")
       .isLength({ min: 5, max: 400 })
