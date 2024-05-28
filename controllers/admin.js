@@ -182,8 +182,8 @@ exports.getProducts = (req, res, next) => {
     });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-  const { productId } = req.body;
+exports.deleteAdminProduct = (req, res, next) => {
+  const { productId } = req.params;
   const { _id } = req.user;
   Product.findById(productId)
     .then((product) => {
@@ -194,10 +194,8 @@ exports.postDeleteProduct = (req, res, next) => {
       fileHelper.deleteFile(product.imageUrl);
       return Product.deleteOne({ _id: productId, userId: _id });
     })
-    .then(() => res.redirect("/admin/products"))
-    .catch((error) => {
-      const nextError = new Error(error);
-      nextError.httpStatusCode = 500;
-      return next(nextError);
-    });
+    .then(() =>
+      res.status(200).json({ message: "Product Deleted Successfully!" })
+    )
+    .catch(() => res.status(500).json({ message: "Product Deletion Failed!" }));
 };
