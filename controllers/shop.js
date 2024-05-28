@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 
+require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 const PDFDocument = require("pdfkit");
 
 const Product = require("../models/product");
@@ -76,7 +79,6 @@ exports.getProduct = (req, res, next) => {
   const { productId } = req.params;
   Product.findById(productId)
     .then((product) => {
-      console.log("🚀 ~ .then ~ product:", product);
       res.render("shop/product-detail", {
         product: product,
         docTitle: product.title,
@@ -116,10 +118,7 @@ exports.postCart = (req, res, next) => {
     .then((product) => {
       return user.addToCart(product);
     })
-    .then((cart) => {
-      console.log("🚀 ~ .then ~ cart:", cart);
-      res.redirect("/cart");
-    })
+    .then(() => res.redirect("/cart"))
     .catch((error) => {
       const nextError = new Error(error);
       nextError.httpStatusCode = 500;
@@ -132,9 +131,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
   const { user } = req;
   user
     .deleteItemFromCart(productId)
-    .then(() => {
-      res.redirect("/cart");
-    })
+    .then(() => res.redirect("/cart"))
     .catch((error) => {
       const nextError = new Error(error);
       nextError.httpStatusCode = 500;
@@ -142,12 +139,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
     });
 };
 
-exports.postCartOrder = (req, res, next) => {
+exports.getCheckoutSuccess = (req, res, next) => {
   const { user } = req;
   user
     .populate("cart.items.productId")
     .then((user) => {
-      console.log("🚀 ~ .then ~ user:", user.cart.items);
       const cartProducts = user.cart.items.map((item) => {
         return {
           quantity: item.quantity,
@@ -163,9 +159,7 @@ exports.postCartOrder = (req, res, next) => {
     .then(() => {
       return user.clearCart();
     })
-    .then(() => {
-      res.redirect("/orders");
-    })
+    .then(() => res.redirect("/orders"))
     .catch((error) => {
       const nextError = new Error(error);
       nextError.httpStatusCode = 500;
@@ -177,7 +171,6 @@ exports.getOrders = (req, res, next) => {
   const { user } = req;
   Order.find({ "user.userId": user._id })
     .then((orders) => {
-      console.log("🚀 ~ .then ~ orders:", orders);
       res.render("shop/orders", {
         docTitle: "Your Orders",
         path: "/orders",
@@ -255,20 +248,44 @@ exports.getInvoiceOrder = (req, res, next) => {
 
 exports.getCheckout = (req, res, next) => {
   const { user } = req;
+  let cartProducts;
+  let totalCartProductsSum = 0;
   user
     .populate("cart.items.productId")
     .then((user) => {
-      const cartProducts = user.cart.items || [];
-      const totalCartProductsSum = cartProducts.reduce(
+      cartProducts = user.cart.items || [];
+      totalCartProductsSum = cartProducts.reduce(
         (sum, cartProduct) =>
           (sum += cartProduct.quantity + cartProduct.productId.price),
         0
       );
+      const lineItems = cartProducts.map((product) => ({
+        price_data: {
+          currency: "usd",
+          unit_amount: product.productId.price * 100,
+          product_data: {
+            name: product.productId.title,
+            description: product.productId.description,
+          },
+        },
+        quantity: product.quantity,
+      }));
+
+      return stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: lineItems,
+        mode: "payment",
+        success_url: `${req.protocol}://${req.get("host")}/checkout/success`,
+        cancel_url: `${req.protocol}://${req.get("host")}/checkout/cancel`,
+      });
+    })
+    .then((stripeSession) => {
       res.render("shop/checkout", {
         docTitle: "Checkout",
         path: "/checkout",
         cartProducts,
         totalCartProductsSum,
+        sessionId: stripeSession.id,
       });
     })
     .catch((error) => {
