@@ -6,14 +6,19 @@ const User = require("../models/user");
 
 const router = express.Router();
 
+//* /login => GET
 router.get("/login", authController.getLogin);
 
+//* /signup => GET
 router.get("/signup", authController.getSignup);
 
+//* /reset-password => GET
 router.get("/reset-password", authController.getResetPassword);
 
+//* /new-password/:token => GET
 router.get("/new-password/:token", authController.getNewPassword);
 
+//* /login => POST
 router.post(
   "/login",
   [
@@ -29,6 +34,7 @@ router.post(
   authController.postLogin
 );
 
+//* /signup => POST
 router.post(
   "/signup",
   [
@@ -36,10 +42,6 @@ router.post(
       .isEmail()
       .withMessage("Enter Valid Email!")
       .custom(async (value) => {
-        // if (value === "test@test.com") {
-        //   throw new Error("This email is forbidden!");
-        // }
-        // return true;
         const user = await User.findOne({ email: value });
         if (user) {
           return Promise.reject("E-Mail Already Exists!");
@@ -65,10 +67,13 @@ router.post(
   authController.postSignup
 );
 
+//* /reset-password => POST
 router.post("/reset-password", authController.postResetPassword);
 
+//* /new-password => POST
 router.post("/new-password", authController.postNewPassword);
 
+//* /logout => POST
 router.post("/logout", authController.postLogout);
 
 module.exports = router;

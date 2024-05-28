@@ -65,6 +65,7 @@ exports.getNewPassword = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("auth/login", {
@@ -94,10 +95,7 @@ exports.postLogin = (req, res, next) => {
           if (passwordMatch) {
             req.session.isAuthenticated = true;
             req.session.user = user;
-            return req.session.save((error) => {
-              console.log("🚀 ~ req.session.save ~ error:", error);
-              res.redirect("/");
-            });
+            return req.session.save(() => res.redirect("/"));
           }
 
           return res.status(422).render("auth/login", {
@@ -108,10 +106,7 @@ exports.postLogin = (req, res, next) => {
             totalErrors: [],
           });
         })
-        .catch((error) => {
-          console.log("🚀 ~ .then ~ error:", error);
-          res.redirect("/login");
-        });
+        .catch(() => res.redirect("/login"));
     })
     .catch((error) => {
       const nextError = new Error(error);
@@ -122,6 +117,7 @@ exports.postLogin = (req, res, next) => {
 
 exports.postSignup = (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("auth/signup", {
@@ -162,7 +158,6 @@ exports.postResetPassword = (req, res, next) => {
   const { email } = req.body;
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
-      console.log("🚀 ~ crypto.randomBytes ~ err:", err);
       return res.redirect("/reset-password");
     }
 
@@ -227,8 +222,5 @@ exports.postNewPassword = (req, res, next) => {
 };
 
 exports.postLogout = (req, res, next) => {
-  req.session.destroy((error) => {
-    console.log("🚀 ~ req.session.destroy ~ error:", error);
-    res.redirect("/");
-  });
+  req.session.destroy(() => res.redirect("/"));
 };

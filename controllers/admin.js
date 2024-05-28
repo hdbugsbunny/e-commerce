@@ -54,10 +54,7 @@ exports.postAddProduct = (req, res, next) => {
   });
   product
     .save()
-    .then((result) => {
-      console.log("Created product");
-      res.redirect("/");
-    })
+    .then(() => res.redirect("/"))
     .catch((error) => {
       const nextError = new Error(error);
       nextError.httpStatusCode = 500;
@@ -102,6 +99,7 @@ exports.postEditProduct = (req, res, next) => {
     price: updatedPrice,
   } = req.body;
   const { file: imageFile } = req;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
@@ -134,10 +132,7 @@ exports.postEditProduct = (req, res, next) => {
       }
       product.description = updatedDescription;
       product.price = updatedPrice;
-      return product.save().then((result) => {
-        console.log("Updating Products");
-        res.redirect("/admin/products");
-      });
+      return product.save().then(() => res.redirect("/admin/products"));
     })
     .catch((error) => {
       const nextError = new Error(error);

@@ -247,7 +247,7 @@ exports.getInvoiceOrder = (req, res, next) => {
 };
 
 exports.getCheckout = (req, res, next) => {
-  const { user } = req;
+  const { user, protocol, get } = req;
   let cartProducts;
   let totalCartProductsSum = 0;
   user
@@ -275,8 +275,8 @@ exports.getCheckout = (req, res, next) => {
         payment_method_types: ["card"],
         line_items: lineItems,
         mode: "payment",
-        success_url: `${req.protocol}://${req.get("host")}/checkout/success`,
-        cancel_url: `${req.protocol}://${req.get("host")}/checkout/cancel`,
+        success_url: `${protocol}://${get("host")}/checkout/success`,
+        cancel_url: `${protocol}://${get("host")}/checkout/cancel`,
       });
     })
     .then((stripeSession) => {
