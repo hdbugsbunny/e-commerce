@@ -148,31 +148,15 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   const { _id } = req.user;
-  const ITEMS_PER_PAGE = 2;
-  const page = +req.query.page || 1;
-  let totalProducts = 0;
 
   Product.find({ userId: _id })
     // .select("title price -_id") //* Which keys I want to retrieve
     // .populate("userId", "name") //* Same as select
-    .countDocuments()
-    .then((numProducts) => {
-      totalProducts = numProducts;
-      return Product.find({ userId: _id })
-        .skip((page - 1) * ITEMS_PER_PAGE)
-        .limit(ITEMS_PER_PAGE);
-    })
     .then((products) => {
       res.render("admin/products", {
         prods: products,
         docTitle: "Admin Products",
         path: "/admin/products",
-        currentPage: page,
-        hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
-        hasPrevPage: page > 1,
-        nextPage: page + 1,
-        prevPage: page - 1,
-        lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((error) => {
