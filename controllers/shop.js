@@ -10,14 +10,26 @@ const ITEMS_PER_PAGE = 2;
 
 exports.getIndex = (req, res, next) => {
   const { page } = req.query;
+  let totalProducts = 0;
+
   Product.find()
-    .skip((page - 1) * ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
-    .then((products) => {
+    .countDocuments((numProducts) => {
+      totalProducts = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
+    .then((prods) => {
       res.render("shop/index", {
-        prods: products,
+        prods,
         docTitle: "Shop",
         path: "/",
+        totalProducts,
+        hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((error) => {
